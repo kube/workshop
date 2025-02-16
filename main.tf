@@ -4,6 +4,7 @@ terraform {
     storage_account_name = "examplestorage0kubekhrm"
     container_name       = "mytfstate"
     key                  = "terraform.tfstate"
+    use_oidc             = true
   }
   required_providers {
     azurerm = {
@@ -16,6 +17,7 @@ terraform {
 provider "azurerm" {
   features {}
   subscription_id = "08d3d1e9-154b-4352-bb01-febf59622d0a"
+  use_oidc        = true
 }
 
 resource "azurerm_resource_group" "example" {
