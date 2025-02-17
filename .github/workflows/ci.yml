@@ -8,12 +8,13 @@ on:
     branches:
       - main
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   build:
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
     runs-on: ubuntu-latest
 
     steps:
