@@ -45,8 +45,8 @@ resource "azurerm_container_app" "app" {
     target_port      = 80
     transport        = "http"
     traffic_weight {
-      label      = "workshop-container"
-      percentage = 100
+      latest_revision = true
+      percentage      = 100
     }
   }
 
