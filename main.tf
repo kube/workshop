@@ -42,7 +42,7 @@ resource "azurerm_container_app" "app" {
 
   ingress {
     external_enabled = true # Change to false for internal-only access
-    target_port      = 80
+    target_port      = 3000
     transport        = "http"
     traffic_weight {
       latest_revision = true
