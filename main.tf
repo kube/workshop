@@ -1,8 +1,8 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "example-resources"
-    storage_account_name = "examplestorage0kubekhrm"
-    container_name       = "mytfstate"
+    resource_group_name  = "rg-tfstate-backend"
+    storage_account_name = "kubeworkshoptfstate"
+    container_name       = "prod"
     key                  = "terraform.tfstate"
     use_oidc             = true
   }
@@ -20,36 +20,24 @@ provider "azurerm" {
   use_oidc        = true
 }
 
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
+resource "azurerm_resource_group" "app" {
+  # TODO: Use variable interpolation for environment
+  name     = "rg-kubeworkshop-prod-weu"
   location = "West Europe"
 }
 
-resource "azurerm_log_analytics_workspace" "example" {
-  name                = "example-law"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  sku                 = "PerGB2018"
+resource "azurerm_container_app_environment" "app" {
+  # TODO: Use variable interpolation for environment
+  name                = "kubeworkshop-env-prod-weu"
+  location            = azurerm_resource_group.app.location
+  resource_group_name = azurerm_resource_group.app.name
 }
 
-resource "azurerm_container_app_environment" "example" {
-  name                = "example-aca-env"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-}
-
-resource "azurerm_container_registry" "example" {
-  name                = "exampleacr"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  sku                 = "Basic"
-  admin_enabled       = true
-}
-
-resource "azurerm_container_app" "example" {
-  name                         = "example-aca"
-  container_app_environment_id = azurerm_container_app_environment.example.id
-  resource_group_name          = azurerm_resource_group.example.name
+resource "azurerm_container_app" "app" {
+  # TODO: Use variable interpolation for environment
+  name                         = "kubeworkshop-frontend-prod-weu"
+  container_app_environment_id = azurerm_container_app_environment.app.id
+  resource_group_name          = azurerm_resource_group.app.name
   revision_mode                = "Single"
 
   template {
