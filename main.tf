@@ -1,6 +1,6 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "rg-tfstate-backend"
+    resource_group_name  = "rg-terraform-backend"
     storage_account_name = "kubeworkshoptfstate"
     container_name       = "prod"
     key                  = "terraform.tfstate"
