@@ -40,6 +40,16 @@ resource "azurerm_container_app" "app" {
   resource_group_name          = azurerm_resource_group.app.name
   revision_mode                = "Single"
 
+  ingress {
+    external_enabled = true # Change to false for internal-only access
+    target_port      = 80
+    transport        = "http"
+    traffic_weight {
+      label      = "workshop-container"
+      percentage = 100
+    }
+  }
+
   template {
     container {
       name   = "workshop-container"
