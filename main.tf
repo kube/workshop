@@ -33,29 +33,46 @@ resource "azurerm_container_app_environment" "app" {
   resource_group_name = azurerm_resource_group.app.name
 }
 
-resource "azurerm_container_app" "app" {
-  # TODO: Use variable interpolation for environment
-  name                         = "kubeworkshop-frontend-prod-weu"
-  container_app_environment_id = azurerm_container_app_environment.app.id
-  resource_group_name          = azurerm_resource_group.app.name
-  revision_mode                = "Single"
+resource "azurerm_container_group" "aci" {
+  name                = "kubeworkshop-cg-frontend-prod-weu"
+  resource_group_name = azurerm_resource_group.app.name
+  location            = azurerm_resource_group.app.location
+  os_type             = "Linux"
 
-  ingress {
-    external_enabled = true # Change to false for internal-only access
-    target_port      = 3000
-    transport        = "http"
-    traffic_weight {
-      latest_revision = true
-      percentage      = 100
+  ip_address_type = "Public"
+  dns_name_label  = "kubeworkshop-frontend-prod-weu"
+
+  container {
+    name   = "caddy-reverse-proxy"
+    image  = "caddy:latest"
+    cpu    = "0.5"
+    memory = "1.0"
+
+    # environment_variables = {
+    #   ACME_AGREE = "true"
+    #   # CERTBOT_EMAIL = 
+    # }
+
+    ports {
+      port     = 80
+      protocol = "TCP"
+    }
+    ports {
+      port     = 443
+      protocol = "TCP"
     }
   }
 
-  template {
-    container {
-      name   = "workshop-container"
-      image  = "ghcr.io/kube/workshop:latest"
-      cpu    = "0.5"
-      memory = "1.0Gi"
+  container {
+    # TODO: Use variable interpolation for environment
+    name   = "kubeworkshop-frontend-prod-weu"
+    image  = "ghcr.io/kube/workshop:latest"
+    cpu    = "0.5"
+    memory = "1.0"
+
+    ports {
+      port     = 3000
+      protocol = "TCP"
     }
   }
 }
