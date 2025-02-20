@@ -20,6 +20,26 @@ provider "azurerm" {
   use_oidc        = true
 }
 
+data "azurerm_key_vault" "example" {
+  name                = "kv-terraform-kubekhrm"
+  resource_group_name = "rg-terraform-backend"
+}
+
+data "azurerm_key_vault_secret" "docker_username" {
+  name         = "docker-username"
+  key_vault_id = data.azurerm_key_vault.example.id
+}
+
+data "azurerm_key_vault_secret" "docker_password" {
+  name         = "docker-password"
+  key_vault_id = data.azurerm_key_vault.example.id
+}
+
+variable "dns_name_label" {
+  type        = string
+  description = "The DNS name label for the container group"
+}
+
 resource "azurerm_resource_group" "app" {
   # TODO: Use variable interpolation for environment
   name     = "rg-kubeworkshop-prod-weu"
@@ -40,18 +60,13 @@ resource "azurerm_container_group" "aci" {
   os_type             = "Linux"
 
   ip_address_type = "Public"
-  dns_name_label  = "kubeworkshop-frontend-prod-weu"
+  dns_name_label  = var.dns_name_label
 
   container {
     name   = "caddy-reverse-proxy"
     image  = "caddy:latest"
     cpu    = "0.5"
     memory = "1.0"
-
-    # environment_variables = {
-    #   ACME_AGREE = "true"
-    #   # CERTBOT_EMAIL = 
-    # }
 
     ports {
       port     = 80
@@ -69,10 +84,11 @@ resource "azurerm_container_group" "aci" {
     image  = "ghcr.io/kube/workshop:latest"
     cpu    = "0.5"
     memory = "1.0"
+  }
 
-    ports {
-      port     = 3000
-      protocol = "TCP"
-    }
+  image_registry_credential {
+    server   = "index.docker.io"
+    username = data.azurerm_key_vault_secret.docker_username.value
+    password = data.azurerm_key_vault_secret.docker_password.value
   }
 }
