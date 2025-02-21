@@ -26,18 +26,13 @@ data "azurerm_key_vault" "example" {
 }
 
 data "azurerm_key_vault_secret" "docker_username" {
-  name         = "docker-username"
+  name         = "docker-user"
   key_vault_id = data.azurerm_key_vault.example.id
 }
 
 data "azurerm_key_vault_secret" "docker_password" {
   name         = "docker-password"
   key_vault_id = data.azurerm_key_vault.example.id
-}
-
-variable "dns_name_label" {
-  type        = string
-  description = "The DNS name label for the container group"
 }
 
 resource "azurerm_resource_group" "app" {
@@ -60,7 +55,7 @@ resource "azurerm_container_group" "aci" {
   os_type             = "Linux"
 
   ip_address_type = "Public"
-  dns_name_label  = var.dns_name_label
+  dns_name_label  = "kubeworkshop-frontend-prod-weu"
 
   container {
     name   = "caddy-reverse-proxy"
