@@ -53,6 +53,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: build
     permissions:
       id-token: write
       contents: read
@@ -61,6 +62,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
