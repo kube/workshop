@@ -45,11 +45,14 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build Docker image
+    - name: Build App Docker image
       run: docker build . -t ghcr.io/${{ github.repository }}:latest
 
-    - name: Push Docker image
-      run: docker push ghcr.io/${{ github.repository }}:latest
+    - name: Build Caddy Docker image
+      run: docker build . -f Dockerfile.caddy -t ghcr.io/${{ github.repository }}/caddy:latest
+
+    - name: Push Docker images
+      run: docker push --all-tags ghcr.io/${{ github.repository }}
 
   deploy:
     name: Deploy

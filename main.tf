@@ -59,7 +59,7 @@ resource "azurerm_container_group" "aci" {
 
   container {
     name   = "caddy-reverse-proxy"
-    image  = "caddy:latest"
+    image  = "ghcr.io/kube/workshop:caddy"
     cpu    = "0.5"
     memory = "1.0"
 
